@@ -2,11 +2,16 @@ import { AiOutlineTable } from "react-icons/ai";
 import { RiVideoLine } from "react-icons/ri";
 import { BiBookmark } from "react-icons/bi";
 import { PiUserSquareLight } from "react-icons/pi";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ReqUserPostCard from "./ReqUserPostCard";
+import { useDispatch, useSelector } from "react-redux";
+import { reqUserPostAction } from './../../Redux/Post/Action';
 
-const ReqUserPostPart = () => {
-    const [activeTab, setActiveTab] = useState();
+const ReqUserPostPart = ({user}) => {
+    const [activeTab, setActiveTab] = useState("Bài viết");
+    const token = localStorage.getItem("token")
+    const dispatch = useDispatch()
+    const {post} = useSelector(store=>store)
     const tabs = [
         {
             tab: "Bài viết",
@@ -29,6 +34,16 @@ const ReqUserPostPart = () => {
         },
     ]
 
+    useEffect(()=>{
+        if (user){
+            const data = {
+                jwt: token, userId: user?.id
+            }
+            dispatch(reqUserPostAction(data))
+        }
+        
+    },[user, post.createdPost])
+
     return ( 
         <div>
             <div className="flex space-x-14 border-t relative">
@@ -41,7 +56,8 @@ const ReqUserPostPart = () => {
             </div>
             <div>
                 <div className="flex flex-wrap">
-                    {[1,1,1,1,1].map(()=> <ReqUserPostCard/>)}
+                    { activeTab==="Bài viết"?post.reqUserPost?.map((item, index)=><ReqUserPostCard key={index} post={item}/>) : 
+                    post.savePost?.map((item, index)=><ReqUserPostCard key={index} post={item}/>)}
                 </div>
             </div>
         </div>

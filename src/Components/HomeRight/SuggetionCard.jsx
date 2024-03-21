@@ -1,11 +1,15 @@
-const SuggetionCard = () => {
+const SuggetionCard = ({user}) => {
     return ( 
         <div className="flex items-center justify-between">
             <div className="flex items-center">
-                <img className="h-9 w-9 rounded-full" src="https://cdn.pixabay.com/photo/2023/11/30/07/04/shetland-sheepdog-8420917_640.jpg" alt="" />
+                <img 
+                    className="h-9 w-9 rounded-full object-cover" 
+                    src={user?.image || "https://th.bing.com/th/id/OIP.c5KXw-wPcnwyyBNayoXfFQAAAA?w=185&h=185&c=7&r=0&o=5&dpr=1.3&pid=1.7"} 
+                    alt="" 
+                />
                 <div className="ml-2">
-                    <p className="font-semibold text-sm">username</p>
-                    <p className="text-xs  opacity-70">Có username và 3 người nữa theo dõi</p>
+                    <p className="font-semibold text-sm">{user?.username}</p>
+                    {/* <p className="text-xs  opacity-70">Có {user} người theo dõi</p> */}
                 </div>
             </div>
             <p className="font-semibold text-xs text-blue-700">Theo dõi</p>

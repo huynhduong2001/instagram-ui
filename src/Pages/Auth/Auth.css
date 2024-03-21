@@ -1,0 +1,13 @@
+.mobileWallpaper {
+    background-image: url('https://res.cloudinary.com/dpbwm7j8i/image/upload/sp2xfox9wmu6yfr9dzub.jpg');
+    background-size: auto;
+    animation: changeBg 8s infinite;
+    border-radius: 30px;
+  }
+
+  @keyframes changeBg {
+    0% { background-image: url("https://res.cloudinary.com/dpbwm7j8i/image/upload/ygihcxsyrmxqwcoz4ibj.jpg"); }
+    25% { background-image: url("https://res.cloudinary.com/dpbwm7j8i/image/upload/vwwvmk8mmsqsmfnrszgw.jpg"); }
+    50% { background-image: url("https://res.cloudinary.com/dpbwm7j8i/image/upload/jgkg3xn7vhiqoedhvuba.jpg"); }
+    75% { background-image: url("https://res.cloudinary.com/dpbwm7j8i/image/upload/sp2xfox9wmu6yfr9dzub.jpg"); }
+  }

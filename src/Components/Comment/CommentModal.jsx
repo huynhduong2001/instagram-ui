@@ -4,8 +4,32 @@ import { FaHeart, FaRegComment, FaRegHeart } from "react-icons/fa6";
 import { RiSendPlaneLine } from "react-icons/ri";
 import CommentCard from "./CommentCard";
 import "./CommentModal.css"
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { createCommentAction, findPostCommentAction } from './../../Redux/Comment/Action';
+import { useParams } from "react-router-dom";
+import { findPostByIdAction } from "../../Redux/Post/Action";
+import { timeDiffierence } from "../../Config/Logics";
 
 const CommentModal = ({onClose, isOpen, isPostLiked, isSaved, handlePostLike, handleSaved}) => {
+
+    const [commentContent, setCommentContent] = useState("");
+    const dispatch = useDispatch();
+    const token = localStorage.getItem("token");
+    const {postId} = useParams();
+    const {comment, post, user} = useSelector(store=>store)
+
+    useEffect(()=>{
+        if (postId){
+            const data = {
+                jwt: token,
+                postId
+            }
+            dispatch(findPostByIdAction(data))
+        }
+        
+    },[comment.createdComment, postId])
+    
 
     return ( 
         <div>
@@ -15,26 +39,53 @@ const CommentModal = ({onClose, isOpen, isPostLiked, isSaved, handlePostLike, ha
                     <ModalBody>
                         <div className="flex h-[75vh] ">
                             <div className="w-[45%] flex flex-col justify-center">
-                                <img className="max-h-full w-full" src="https://cdn.pixabay.com/photo/2023/11/21/21/36/mountains-8404275_640.jpg" alt="" />
+                                <img className="max-h-full w-full object-cover" src={post.singlePost?.image} alt="" />
                             </div>
                             <div className="pl-10 w-[55%] relative">
                                 <div className="flex justify-between items-center py-5">
                                     <div className="flex items-center">
                                         <div>
-                                            <img className="h-9 w-9 rounded-full" src="https://scontent.fdad3-4.fna.fbcdn.net/v/t1.6435-9/159288603_1138117993322957_6770327921972223324_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=be3454&_nc_eui2=AeFquh81vKoW5_LqSUsKJ_z3Xl5pnZ1arGJeXmmdnVqsYn6xK-UmGu8QEb0xp8UwJ_QoP4QWcLPCFspyEgWCjHKU&_nc_ohc=rpJZ49sgTSsAX8n1LnW&_nc_ht=scontent.fdad3-4.fna&oh=00_AfBEgrQew3uW4nhaqFCuudy8-PkzN5ENz081T_lSdXN2JQ&oe=65C199B4" alt="" />
+                                            <img 
+                                                className="h-9 w-9 rounded-full" 
+                                                src={user.reqUser?.userImage || "https://th.bing.com/th/id/OIP.c5KXw-wPcnwyyBNayoXfFQAAAA?w=185&h=185&c=7&r=0&o=5&dpr=1.3&pid=1.7"} 
+                                                alt="" 
+                                            />
                                         </div>
                                         <div className="ml-2">
-                                            <p>Huỳnh Dương</p>
+                                            <p>{user.reqUser?.username}</p>
                                         </div>
                                     </div>
                                     <BsThreeDots/>
                                 </div>
                                 <hr />
                                 <div className="comment">
-                                    {[1,1,1,1].map(()=> <CommentCard/>)}
+                                    <div className="flex items-center justify-between py-5">
+                                        <div className="flex items-center">
+                                            <div>
+                                                <img 
+                                                    className="w-9 h-9 rounded-full" 
+                                                    src={post.singlePost?.user?.userImage || "https://th.bing.com/th/id/OIP.c5KXw-wPcnwyyBNayoXfFQAAAA?w=185&h=185&c=7&r=0&o=5&dpr=1.3&pid=1.7"} 
+                                                    alt="" 
+                                                />
+                                            </div>
+                                            <div className="ml-3">
+                                                <p>
+                                                    <span className="font-semibold">{post.singlePost?.user?.username}</span>
+                                                    <span className="ml-2">{post.singlePost?.caption}</span>
+
+                                                </p>
+                                                <div className="flex items-center space-x-3 text-xs opacity-60 pt-2">
+                                                    {post.singlePost?.createAt && <span>{timeDiffierence(post.singlePost?.createAt)}</span>}
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    {/* Reply to comment */}
+                                    {post.singlePost?.comments?.length > 0 && post.singlePost?.comments?.map((item, index)=> <CommentCard key={index} comment={item}/>)}
                                 </div>
                                 <div className=" absolute bottom-0 w-[90%]">
-                                    <div className="flex items-center justify-between w-full px-5 py-4">
+                                    <div className="flex items-center justify-between w-full py-4">
                                         <div className="flex items-center space-x-2">
                                             {isPostLiked?<FaHeart className="text-2xl hover:opacity-50 cursor-pointer text-red-500" onClick={handlePostLike}/>:<FaRegHeart className="text-2xl hover:opacity-50 cursor-pointer" onClick={handlePostLike}/>}
                                             <FaRegComment className="text-2xl hover:opacity-50 cursor-pointer"/>
@@ -47,14 +98,33 @@ const CommentModal = ({onClose, isOpen, isPostLiked, isSaved, handlePostLike, ha
                                     </div>
 
                                     <div className="w-full py-2">
-                                        <p>10 người đã thích</p>
-                                        <p className="opacity-50 text-sm">1 ngày trước</p>
+                                        {post.singlePost?.likedByUsers?.length>0 && <p>{post.singlePost?.likedByUsers?.length} lượt thích</p>}
+                                        {post.singlePost?.createAt &&  <p className="opacity-50 text-sm">{timeDiffierence(post.singlePost?.createAt)}</p>}
                                     </div>
 
                                     <div className=" border-t w-full">
                                         <div className="flex items-center w-full px-5 justify-between">
                                             <BsEmojiSmile/>
-                                            <input className="commentInput" type="text" placeholder="Thêm bình luận..." />
+                                            <input 
+                                                onChange={(e)=>setCommentContent(e.target.value)} 
+                                                className="commentInput" 
+                                                type="text" 
+                                                placeholder="Thêm bình luận..." 
+                                                value={commentContent}
+                                                onKeyDown={(e)=>{
+                                                    if(e.key==="Enter"){
+                                                        const data = {
+                                                            jwt: token,
+                                                            postId,
+                                                            data:{
+                                                                "content": commentContent
+                                                            }
+                                                        }
+                                                        dispatch(createCommentAction(data))
+                                                        setCommentContent("")
+                                                    }
+                                                }}
+                                            />
                                         </div>
                                     </div>
                                 </div>

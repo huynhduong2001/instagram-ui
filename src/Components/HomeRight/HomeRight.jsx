@@ -1,17 +1,21 @@
 import SuggetionCard from "./SuggetionCard";
 
-const HomeRight = () => {
+const HomeRight = ({user,popular}) => {
     return ( 
         <div className="">
             <div>
                 <div className="flex justify-between items-center">
                     <div className="flex items-center">
                         <div>
-                            <img className="w-12 h-12 rounded-full" src="https://cdn.pixabay.com/photo/2023/11/29/12/29/kid-8419485_640.jpg" alt="" />
+                            <img 
+                                className="h-12 w-12 rounded-full object-cover" 
+                                src={user?.image || "https://th.bing.com/th/id/OIP.c5KXw-wPcnwyyBNayoXfFQAAAA?w=185&h=185&c=7&r=0&o=5&dpr=1.3&pid=1.7"} 
+                                alt="" 
+                            />
                         </div>
                         <div className="ml-3">
-                            <p>fullname</p>
-                            <p className="opacity-70">username</p>
+                            <p>{user?.name}</p>
+                            <p className="opacity-70">{user?.username}</p>
                         </div>
                     </div>
                     <div>
@@ -21,7 +25,7 @@ const HomeRight = () => {
                 </div>
 
                 <div className="space-y-5 mt-10">
-                    {[1,1,1,1].map(()=><SuggetionCard/>)}
+                    {popular?.length > 0 && popular.map((item, index)=><SuggetionCard user={item} key={index}/>)}
                 </div>
             </div>
             

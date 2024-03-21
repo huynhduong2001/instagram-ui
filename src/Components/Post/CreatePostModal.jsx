@@ -4,10 +4,19 @@ import { IoLocationOutline } from "react-icons/io5";
 import { GrEmoji } from "react-icons/gr";
 import "./CreatePostModal.css"
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { uploadToCloudinary } from "../../Config/UploadToCloudinary";
+import { createPostAction } from "../../Redux/Post/Action";
 const CreatePostModal = ({onClose, isOpen}) => {
     const [isDragOver, setIsDragOver] = useState(false);
     const [file, setFile] = useState(null);
     const [caption, setCaption] = useState("");
+    const [location, setLocation] = useState("");
+    const [imageUrl, setImageUrl] = useState("");
+    const jwt = localStorage.getItem("token");
+    const dispatch = useDispatch();
+
+
     const handleDrop = (e)=>{
         e.preventDefault();
         const droppedFile = e.dataTransfer.files[0];
@@ -26,10 +35,12 @@ const CreatePostModal = ({onClose, isOpen}) => {
         setIsDragOver(false);
     }
 
-    const handleOnChange = (e)=>{
+    const handleOnChange = async(e)=>{
         const file = e.target.files[0];
-        console.log(file);
         if (file && (file.type.startsWith("image/") || file.type.startsWith("video/"))){
+            const imgUrl = await uploadToCloudinary(file)
+            console.log(imgUrl)
+            setImageUrl(imgUrl)
             setFile(file);
         }
         else {
@@ -41,6 +52,17 @@ const CreatePostModal = ({onClose, isOpen}) => {
     const handleCaptionChange = (e)=>{
         setCaption(e.target.value);
     }
+
+    const handleCreatePost = ()=>{
+        const data = {
+            jwt: jwt,
+            data: {
+                caption, location, image: imageUrl
+            }
+        }
+        dispatch(createPostAction(data))
+        onClose();
+    }
     return ( 
         <div>
             <Modal size={"2xl"} onClose={onClose} isOpen={isOpen} isCentered>
@@ -48,7 +70,7 @@ const CreatePostModal = ({onClose, isOpen}) => {
                 <ModalContent>
                     <div className="flex justify-between py-1 px-10 items-center">
                         <p>Tạo bài viết mới</p>
-                        <Button variant={"ghost"} size={"sm"} colorScheme="blue">Đăng</Button>
+                        <Button variant={"ghost"} size={"sm"} colorScheme="blue" onClick={handleCreatePost}>Đăng</Button>
                     </div>
                     <hr />
                     <ModalBody>
@@ -90,7 +112,7 @@ const CreatePostModal = ({onClose, isOpen}) => {
                                 <hr />
 
                                 <div className="p-2 flex justify-between items-center">
-                                    <input className="locationInput" type="text" placeholder="Vị trí" name="location" />
+                                    <input onChange={(e)=>setLocation(e.target.value)} className="locationInput" type="text" placeholder="Vị trí" name="location" />
                                     <IoLocationOutline/>
                                 </div>
                                 <hr />
